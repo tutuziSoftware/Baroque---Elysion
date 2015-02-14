@@ -4,17 +4,22 @@ var Twitter4FxOS = (function(){
         this._storage = new Storage("accessToken");
     };
 
-    Twitter4FxOS.prototype.checkOAuth = function(){
-        console.log("Twitter4FxOS.prototype.checkOAuth");
+    /**
+     * OAuth承認を行います。
+     * @returns {Promise}
+     */
+    Twitter4FxOS.prototype.executeOAuth = function(){
+        console.log("Twitter4FxOS.prototype.executeOAuth");
         return new Promise(function(resolve, reject){
             this._storage.getItem().then(function(accessToken){
                 resolve(accessToken);
             }).catch(function(){
                 console.log("catch");
-                this._network.startOAuth().then(function(){
-
-                }).catch(function(){
-
+                this._network.startOAuth().then(function(accessToken){
+                    this._storage.setItem(accessToken);
+                    resolve(accessToken);
+                }.bind(this)).catch(function(){
+                    reject();
                 });
             }.bind(this));
         }.bind(this));
@@ -32,25 +37,21 @@ var Twitter4FxOS = (function(){
         return new Promise(function(resolve, reject){
             const CONSUMER_KEY = "x1Z4hAckN1a5LTQKouGQ";
             const CONSUMER_SECRET = "2FXyGxHDh856bZXTO5dhDvaFl3SqQp65EQZItT6k";
-            const basic = btoa(encodeURIComponent(CONSUMER_KEY)+":"+encodeURIComponent(CONSUMER_SECRET));
-
-            console.log(this);
+            const basic = btoa(encodeURI(CONSUMER_KEY)+":"+encodeURI(CONSUMER_SECRET));
 
             this._$http({
                 url:"https://api.twitter.com/oauth2/token",
                 method:"POST",
-                data:{
+                data:$.param({
                     grant_type:'client_credentials'
-                },
+                }),
                 headers: {
                     Authorization: "Basic "+basic,
                     "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8'
                 }
-            }).success(function(){
-                console.log(arguments);
-                resolve();
+            }).success(function(data){
+                resolve(data["access_token"]);
             }).error(function(){
-                console.log(arguments);
                 reject();
             });
         }.bind(this));
