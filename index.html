@@ -2,7 +2,8 @@
 <html ng-csp ng-app="Baroque">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1">
+    <title>Baroque - Elysion</title>
     <link rel="stylesheet" href="angular-csp.css">
     <script src="lib/oauth.js"></script>
     <script src="lib/sha1.js"></script>
@@ -16,8 +17,8 @@
 </head>
 <body>
     <div ng-controller="main">
-        oauth:<input name="oauth" />
-        <button ng-click="startOAuth()">OK</button>
+        pin:<input ng-model="pin" />
+        <button ng-click="fetchAccessToken()">OK</button>
     </div>
 </body>
 </html>
