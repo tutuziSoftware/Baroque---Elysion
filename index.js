@@ -1,10 +1,12 @@
 var baroque = angular.module('Baroque', []);
 
-baroque.controller("main", function($scope, $http){
+baroque.controller("main", ['$scope', '$http', function($scope, $http){
     var api = new Twitter4FxOS($http);
     api.executeOAuth().then(function(){
-        console.log("access");
+        api.getHomeTimeline(function(){
+            console.log("api.getHomeTimeline");
+        });
     }).catch(function(){
         $scope.accessToken = false;
     });
-});
+}]);
