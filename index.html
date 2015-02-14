@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html ng-csp ng-app="Baroque">
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" href="angular-csp.css">
     <script src="lib/oauth.js"></script>
     <script src="lib/sha1.js"></script>
     <script src="lib/underscore-min.js"></script>
@@ -13,8 +14,8 @@
     <script src="twitter4js.js"></script>
     <script src="index.js"></script>
 </head>
-<body ng-app="Baroque">
-    <div>
+<body>
+    <div ng-controller="main">
         oauth:<input name="oauth" />
         <button ng-click="startOAuth()">OK</button>
     </div>
