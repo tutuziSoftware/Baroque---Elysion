@@ -17,8 +17,16 @@
 </head>
 <body>
     <div ng-controller="main">
-        pin:<input ng-model="pin" />
-        <button ng-click="fetchAccessToken()">OK</button>
+        <div ng-if="enableApi == false">
+            pin:<input ng-model="pin" />
+            <button ng-click="fetchAccessToken()">OK</button>
+        </div>
+        <div ng-show="enableApi">
+            <input ng-model="post" />
+            <ul>
+                <li></li>
+            </ul>
+        </div>
     </div>
 </body>
 </html>

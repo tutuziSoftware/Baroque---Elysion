@@ -43,6 +43,7 @@ var Twitter4FxOS = (function(){
             console.log(pin, this);
 
             this._network.fetchAccessToken(pin).then(function (accessToken) {
+                console.log(accessToken);
                 this._storage.setItem(accessToken);
                 resolve();
             }.bind(this)).catch(function () {
@@ -63,7 +64,7 @@ var Twitter4FxOS = (function(){
      * @constructor
      */
     function Network($http, accessToken){
-        console.log($http);
+        console.log($http, accessToken);
         this._$http = $http;
         this._accessToken = accessToken;
     };
@@ -126,9 +127,8 @@ var Twitter4FxOS = (function(){
             this._$http({
                 url: OAuth.addToURL(message.action, message.parameters),
                 method: message.method
-            }).success(function(){
-                console.log(arguments);
-                resolve();
+            }).success(function(data){
+                resolve(data.match(/oauth_token=([^&]*)/)[1]);
             }).error(function(){
                 console.log(arguments);
                 reject();
