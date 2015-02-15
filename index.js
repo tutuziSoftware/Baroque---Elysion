@@ -4,10 +4,14 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
     var api = new Twitter4FxOS($http, function(call){
         if(call == Twitter4FxOS.prototype.NG){
             console.log("");
+            $scope.enableApi = false;
+            $scope.$apply();
             api.executeOAuth().then(function(){
-                location.reload();
+                console.log("");
+                //location.reload();
             }).catch(function(){
-                location.reload();
+                console.log("");
+                //location.reload();
             });
         }else{
             console.log($scope.enableApi, $scope.$apply);
@@ -17,6 +21,7 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
     });
 
     $scope.fetchAccessToken = function(){
+        console.log($scope.pin);
         api.fetchAccessToken($scope.pin).then(function(){
             console.log("API standing by");
         }).catch(function(){

@@ -17,7 +17,7 @@
 </head>
 <body>
     <div ng-controller="main">
-        <div ng-if="enableApi == false">
+        <div ng-show="enableApi == false">
             pin:<input ng-model="pin" />
             <button ng-click="fetchAccessToken()">OK</button>
         </div>

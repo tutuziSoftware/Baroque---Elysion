@@ -1,14 +1,30 @@
 var Twitter4FxOS = (function(){
     function Twitter4FxOS($http, callback){
         this._storage = new Storage("accessToken");
+        this._accessTokenSecret = new Storage("accessTokenSecret");
 
         this._storage.getItem().then(function(accessToken){
-            this._network = new Network($http, accessToken);
-            callback(Twitter4FxOS.prototype.OK);
-        }.bind(this)).catch(function(){
-            this._network = new Network($http);
+            console.log("test");
+            this._accessTokenSecret.getItem().then(function(accessTokenSecret){
+                this._network = new Network({
+                    $http:$http,
+                    accessToken:accessToken,
+                    accessTokenSecret:accessTokenSecret
+                });
+                callback(Twitter4FxOS.prototype.OK);
+            }).catch(
+                tryOAuth.bind(this)
+            );
+        }.bind(this)).catch(
+            tryOAuth.bind(this)
+        );
+
+        function tryOAuth(){
+            this._network = new Network({
+                $http:$http
+            });
             callback(Twitter4FxOS.prototype.NG);
-        }.bind(this));
+        }
     };
 
     Twitter4FxOS.prototype.OK = {};
@@ -23,7 +39,14 @@ var Twitter4FxOS = (function(){
         return new Promise(function(resolve, reject){
             this._storage.getItem().then(function(accessToken){
                 console.log("then");
-                resolve();
+                this._accessTokenSecret.getItem().then(function(accessTokenSecret){
+                    resolve({
+                        accessToken:accessToken,
+                        accessTokenSecret:accessTokenSecret
+                    });
+                }).catch(function(){
+                    console.log("TODO アクセストークンの再取得");
+                });
             }).catch(function(){
                 console.log(this._network);
                 this._network.startOAuth().then(function(accessToken){
@@ -42,9 +65,10 @@ var Twitter4FxOS = (function(){
         return new Promise(function(resolve, reject) {
             console.log(pin, this);
 
-            this._network.fetchAccessToken(pin).then(function (accessToken) {
-                console.log(accessToken);
-                this._storage.setItem(accessToken);
+            this._network.fetchAccessToken(pin).then(function (accessTokens) {
+                console.log(accessTokens);
+                this._storage.setItem(accessTokens.accessToken);
+                this._accessTokenSecret.setItem(accessTokens.accessTokenSecret);
                 resolve();
             }.bind(this)).catch(function () {
                 console.log("network error");
@@ -63,10 +87,10 @@ var Twitter4FxOS = (function(){
      * 通信系
      * @constructor
      */
-    function Network($http, accessToken){
-        console.log($http, accessToken);
-        this._$http = $http;
-        this._accessToken = accessToken;
+    function Network(args){
+        this._$http = args.$http;
+        this._accessToken = args.accessToken;
+        this._accessTokenSecret = args.accessTokenSecret;
     };
 
     Network.prototype._CONSUMER_KEY = "x1Z4hAckN1a5LTQKouGQ";
@@ -128,7 +152,15 @@ var Twitter4FxOS = (function(){
                 url: OAuth.addToURL(message.action, message.parameters),
                 method: message.method
             }).success(function(data){
-                resolve(data.match(/oauth_token=([^&]*)/)[1]);
+                var tokens = data.match(/oauth_token=([^&]*)&oauth_token_secret=([^&]*)/);
+                console.log(data);
+                console.log(tokens);
+                const accessToken = tokens[1];
+                const accessTokenSecret = tokens[2];
+                resolve({
+                    accessToken: accessToken,
+                    accessTokenSecret: accessTokenSecret
+                });
             }).error(function(){
                 console.log(arguments);
                 reject();
