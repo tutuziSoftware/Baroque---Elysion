@@ -3,16 +3,19 @@ var Twitter4FxOS = (function(){
         this._storage = new Storage("accessToken");
         this._accessTokenSecret = new Storage("accessTokenSecret");
 
+        console.log("init");
+
         this._storage.getItem().then(function(accessToken){
-            console.log("test");
+            console.log("accessToken");
             this._accessTokenSecret.getItem().then(function(accessTokenSecret){
+                console.log("accessToken");
                 this._network = new Network({
                     $http:$http,
                     accessToken:accessToken,
                     accessTokenSecret:accessTokenSecret
                 });
                 callback(Twitter4FxOS.prototype.OK);
-            }).catch(
+            }.bind(this)).catch(
                 tryOAuth.bind(this)
             );
         }.bind(this)).catch(
@@ -27,8 +30,16 @@ var Twitter4FxOS = (function(){
         }
     };
 
-    Twitter4FxOS.prototype.OK = {};
-    Twitter4FxOS.prototype.NG = {};
+    Twitter4FxOS.prototype.OK = {
+        toString:function(){
+            return "OK";
+        }
+    };
+    Twitter4FxOS.prototype.NG = {
+        toString:function(){
+            return "NG";
+        }
+    };
 
     /**
      * OAuth承認を行います。
@@ -167,30 +178,40 @@ var Twitter4FxOS = (function(){
     };
 
     Network.prototype.getHomeTimeline = function(){
+        console.log("getHomeTimeline");
+
         return new Promise(function(resolve, reject){
+            console.log("getHomeTimeline", this);
+
             var message = {
                 method: "POST",
                 action: "https://api.twitter.com/1.1/statuses/home_timeline.json",
                 parameters: {
                     oauth_signature_method: "HMAC-SHA1",
                     oauth_consumer_key: this._CONSUMER_KEY,
-                    oauth_token: this._OAUTH_TOKEN
+                    oauth_token: this._accessToken
                 }
             };
+
+            console.log("getHomeTimeline");
 
             OAuth.setTimestampAndNonce(message);
             OAuth.SignatureMethod.sign(message, {
                 consumerSecret: this._CONSUMER_SECRET,
-                tokenSecret: this._OAUTH_TOKEN_SECRET
+                tokenSecret: this._accessTokenSecret
             });
+
+            console.log("getHomeTimeline");
 
             this._$http({
                 url: OAuth.addToURL(message.action, message.parameters),
                 type: message.method
             }).success(function(data){
                 console.log(data);
+                resolve();
             }).error(function(){
                 console.log(arguments);
+                reject();
             });
         }.bind(this));
     };
