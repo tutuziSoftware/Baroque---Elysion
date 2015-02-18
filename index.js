@@ -14,8 +14,15 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
                 //location.reload();
             });
         }else{
-            console.log($scope.enableApi, $scope.$apply);
             $scope.enableApi = true;
+
+            //TODO ここでAPIを叩く
+            api.getHomeTimeline().then(function(){
+
+            }).catch(function(){
+
+            });
+
             $scope.$apply();
         }
     });

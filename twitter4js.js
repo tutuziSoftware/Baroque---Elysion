@@ -77,10 +77,8 @@ var Twitter4FxOS = (function(){
         }.bind(this));
     };
 
-    Twitter4FxOS.prototype.getHomeTimeline = function(callback){
-        this._network.getHomeTimeline(function(){
-
-        });
+    Twitter4FxOS.prototype.getHomeTimeline = function(){
+        return this._network.getHomeTimeline();
     };
 
     /**
@@ -169,18 +167,32 @@ var Twitter4FxOS = (function(){
     };
 
     Network.prototype.getHomeTimeline = function(){
-        console.log(this._accessToken);
-        this._$http({
-            url:"https://api.twitter.com/1.1/statuses/home_timeline.json",
-            method:"GET",
-            headers: {
-                Authorization: "Bearer "+this._accessToken
-            }
-        }).success(function(data){
-            console.log(data);
-        }).error(function(){
-            console.log(arguments);
-        });
+        return new Promise(function(resolve, reject){
+            var message = {
+                method: "POST",
+                action: "https://api.twitter.com/1.1/statuses/home_timeline.json",
+                parameters: {
+                    oauth_signature_method: "HMAC-SHA1",
+                    oauth_consumer_key: this._CONSUMER_KEY,
+                    oauth_token: this._OAUTH_TOKEN
+                }
+            };
+
+            OAuth.setTimestampAndNonce(message);
+            OAuth.SignatureMethod.sign(message, {
+                consumerSecret: this._CONSUMER_SECRET,
+                tokenSecret: this._OAUTH_TOKEN_SECRET
+            });
+
+            this._$http({
+                url: OAuth.addToURL(message.action, message.parameters),
+                type: message.method
+            }).success(function(data){
+                console.log(data);
+            }).error(function(){
+                console.log(arguments);
+            });
+        }.bind(this));
     };
 
     return Twitter4FxOS;
