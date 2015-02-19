@@ -184,7 +184,7 @@ var Twitter4FxOS = (function(){
             console.log("getHomeTimeline", this);
 
             var message = {
-                method: "POST",
+                method: "GET",
                 action: "https://api.twitter.com/1.1/statuses/home_timeline.json",
                 parameters: {
                     oauth_signature_method: "HMAC-SHA1",
@@ -201,14 +201,14 @@ var Twitter4FxOS = (function(){
                 tokenSecret: this._accessTokenSecret
             });
 
-            console.log("getHomeTimeline");
+            console.log(this);
 
             this._$http({
                 url: OAuth.addToURL(message.action, message.parameters),
                 type: message.method
             }).success(function(data){
                 console.log(data);
-                resolve();
+                resolve(data);
             }).error(function(){
                 console.log(arguments);
                 reject();

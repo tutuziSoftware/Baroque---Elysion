@@ -24,7 +24,10 @@
         <div ng-show="enableApi">
             <input ng-model="post" />
             <ul>
-                <li></li>
+                <li ng-repeat="post in timeline">
+                    {{post.user.name}}/{{post.user.screen_name}}<br>
+                    {{post.text}}
+                </li>
             </ul>
         </div>
     </div>

@@ -17,8 +17,13 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
             $scope.enableApi = true;
 
             //TODO ここでAPIを叩く
-            api.getHomeTimeline().then(function(){
+            api.getHomeTimeline().then(function(timeline){
+                console.log(timeline);
+                timeline.forEach(function(post){
+                    $scope.timeline.push(post);
+                });
 
+                $scope.$apply();
             }).catch(function(){
 
             });
@@ -26,6 +31,8 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
             $scope.$apply();
         }
     });
+
+    $scope.timeline = [];
 
     $scope.fetchAccessToken = function(){
         console.log($scope.pin);
