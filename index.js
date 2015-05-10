@@ -1,6 +1,10 @@
 var baroque = angular.module('Baroque', []);
 
 baroque.controller("main", ['$scope', '$http', function($scope, $http){
+    $scope.ERROR = {
+        NETWORK:{}
+    }
+
     var api = new Twitter4FxOS($http, function(call){
         if(call == Twitter4FxOS.prototype.NG){
             console.log("");
@@ -45,5 +49,15 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
 
     $scope.updateTimeline = function(){
         console.log("update");
+
+        api.getHomeTimeline().then(function(timeline){
+            timeline.forEach(function(post){
+                $scope.timeline.push(post);
+            });
+
+            $scope.$apply();
+        }).catch(function(){
+            $scole.error = $scope.ERROR.NETWORK;
+        });
     };
 }]);
