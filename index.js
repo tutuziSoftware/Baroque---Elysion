@@ -42,4 +42,8 @@ baroque.controller("main", ['$scope', '$http', function($scope, $http){
             console.log("");
         });
     };
+
+    $scope.updateTimeline = function(){
+        console.log("update");
+    };
 }]);

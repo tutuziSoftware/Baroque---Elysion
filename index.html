@@ -23,6 +23,7 @@
         </div>
         <div ng-show="enableApi">
             <input ng-model="post" />
+            <input ng-click="updateTimeline()" value="更新" type="button">
             <ul>
                 <li ng-repeat="post in timeline">
                     {{post.user.name}}/{{post.user.screen_name}}<br>
